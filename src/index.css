@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600&family=JetBrains+Mono&display=swap');
+
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.95);
+  background-color: #050505;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+}
+
+.App {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: radial-gradient(circle at center, #2a1a10 0%, #050505 100%);
+}
+
+.start-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+.start-button {
+  padding: 1.2rem 3rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #ff85a1 0%, #ff067e 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(255, 6, 126, 0.4);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.start-button:hover {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 0 15px 40px rgba(255, 6, 126, 0.6);
+}
+
+.typing-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 650px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 1.8rem;
+  color: #ff85a1;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 3rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.typing-line {
+  margin-bottom: 1.5rem;
+  min-height: 1.8em;
+  text-shadow: 0 0 15px rgba(255, 133, 161, 0.4);
+}
+
+.cursor {
+  display: inline-block;
+  width: 12px;
+  height: 1.5em;
+  background: #ff85a1;
+  margin-left: 5px;
+  vertical-align: middle;
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.canvas-container {
+  position: absolute;
+  inset: 0;
+}
+
+.ui-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.hint {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.2rem 2.5rem;
+  border-radius: 50px;
+  color: #fff;
+  cursor: pointer;
+  pointer-events: auto;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: float 3s ease-in-out infinite;
+  transition: background 0.3s;
+}
+
+.upload-section {
+  pointer-events: auto;
+}
+
+.upload-button {
+  background: rgba(255, 133, 161, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px dashed rgba(255, 133, 161, 0.5);
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  color: #ff85a1;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.upload-button:hover {
+  background: rgba(255, 133, 161, 0.3);
+  border-color: #ff85a1;
+  transform: translateY(-2px);
+}
+
+.hint:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+
+  50% {
+    transform: translate(-50%, -15px);
+  }
+}
+
+.final-message {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  width: 90%;
+}
+
+.final-message h1 {
+  font-family: 'Dancing Script', cursive;
+  font-size: 6rem;
+  margin: 0;
+  background: linear-gradient(135deg, #fff 0%, #ff85a1 50%, #ff067e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 10px 20px rgba(255, 6, 126, 0.3));
+  opacity: 0;
+  animation: fadeInDown 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.final-message p {
+  font-size: 1.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+  opacity: 0;
+  animation: fadeInUp 1.5s cubic-bezier(0.23, 1, 0.32, 1) 0.5s forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
