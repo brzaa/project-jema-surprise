@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-import * as THREE from "three";
 import { useTexture } from "@react-three/drei";
 
 export function Memories({ urls }: { urls: string[] }) {

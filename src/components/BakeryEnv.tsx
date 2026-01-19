@@ -1,5 +1,3 @@
-import { useRef } from "react";
-import * as THREE from "three";
 import { MeshReflectorMaterial, Float } from "@react-three/drei";
 
 export function BakeryEnv() {
