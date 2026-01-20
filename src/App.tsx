@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, OrbitControls, ContactShadows } from "@react-three/drei";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Environment, OrbitControls, ContactShadows, Text, Html } from "@react-three/drei";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Cake } from "./models/Cake";
 import { Candle } from "./models/Candle";
@@ -9,25 +9,58 @@ import { Figure } from "./models/Figure";
 import { Fireworks } from "./components/Fireworks";
 import { BakeryEnv } from "./components/BakeryEnv";
 import { Memories } from "./components/Memories";
+import { Letter } from "./models/Letter";
 import "./index.css";
 
 const TYPED_LINES = [
-  "> hello jema",
+  "> hi baby",
   "...",
-  "> today is your special day",
+  "> 22 years ago a prettiest angel has been born",
   "...",
-  "> i made you this little surprise",
+  "> so i made this temple to worship her",
   "...",
-  "٩(◕‿◕)۶ hope you like it!"
+  "٩(◕‿◕)۶ hope you accept my sacrifice"
 ];
 
-const TYPED_CHAR_DELAY = 80;
-const POST_TYPING_DELAY = 1000;
+const TYPED_CHAR_DELAY = 50;
+const POST_TYPING_DELAY = 1500;
 
-function Scene({ isPlaying, isCandleLit, photos }: { isPlaying: boolean; isCandleLit: boolean; photos: string[] }) {
+function Scene({ isPlaying, isCandleLit, photos, onOpenLetter }: {
+  isPlaying: boolean;
+  isCandleLit: boolean;
+  photos: string[];
+  onOpenLetter: () => void;
+}) {
   const cakeGroup = useRef<THREE.Group>(null);
   const tableGroup = useRef<THREE.Group>(null);
   const [animationTime, setAnimationTime] = useState(0);
+
+  useEffect(() => {
+    console.log("3D Scene Mounted");
+  }, []);
+
+  // Single "22" themed candle
+  const simplifiedCandle = useMemo(() => {
+    return (
+      <group position={[0, 2.2, 0]}>
+        <Candle
+          isLit={isCandleLit}
+          scale={0.8}
+        />
+        <Text
+          position={[0, 0.4, 0.35]}
+          fontSize={0.6}
+          color="#ff067e"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.02}
+          outlineColor="#ffffff"
+        >
+          22
+        </Text>
+      </group>
+    );
+  }, [isCandleLit]);
 
   useFrame((state, delta) => {
     if (!isPlaying) return;
@@ -37,17 +70,15 @@ function Scene({ isPlaying, isCandleLit, photos }: { isPlaying: boolean; isCandl
 
     // Cake entry (drop from top)
     if (cakeGroup.current) {
-      const cakeY = Math.max(0, 10 * Math.exp(-t * 2));
-      cakeGroup.current.position.y = cakeY;
-      // Smooth continuous rotation after entry
+      const cakeY = Math.max(0, 5 * Math.exp(-t * 2));
+      cakeGroup.current.position.y = -1.75 + cakeY; // Base y is -1.75 (on table)
       cakeGroup.current.rotation.y = t * 0.2 + (t > 2 ? Math.sin(t * 0.5) * 0.1 : 0);
     }
 
     // Table entry (slide from front)
     if (tableGroup.current) {
-      const tableZ = Math.max(0, 20 * Math.exp(-t * 1.5));
+      const tableZ = Math.max(0, 10 * Math.exp(-t * 1.5)); // Reduced from 20 to 10
       tableGroup.current.position.z = -tableZ;
-      // Tilt table slightly for depth
       tableGroup.current.rotation.x = Math.max(0, 0.1 * Math.exp(-t));
     }
 
@@ -61,16 +92,24 @@ function Scene({ isPlaying, isCandleLit, photos }: { isPlaying: boolean; isCandl
       <BakeryEnv />
       <Memories urls={photos} />
       <Figure isLit={isCandleLit} />
+      <Letter
+        position={[2, -1.6, 3.5]} // Moved closer and more central-right for easy access
+        onClick={onOpenLetter}
+      />
 
       <group ref={tableGroup} position={[0, -2, 0]}>
         <Table />
         <ContactShadows opacity={0.6} scale={20} blur={2.5} far={10} resolution={512} color="#000000" />
       </group>
 
-      <group ref={cakeGroup}>
-        <Cake position={[0, -1.75, 0]} />
-        <Candle position={[0, 0.25, 0]} isLit={isCandleLit} scale={0.5} />
+      <group ref={cakeGroup} position={[0, -1.75, 0]}>
+        <Cake>
+          {simplifiedCandle}
+        </Cake>
       </group>
+
+      <ambientLight intensity={1.5} />
+      <pointLight position={[10, 10, 10]} intensity={2.5} castShadow />
     </>
   );
 }
@@ -83,7 +122,7 @@ export default function App() {
   const [isCandleLit, setIsCandleLit] = useState(true);
   const [fireworksActive, setFireworksActive] = useState(false);
   const [hasCompleted, setHasCompleted] = useState(false);
-  const [photos, setPhotos] = useState<string[]>(["/placeholder_jema.png"]);
+  const [photos, setPhotos] = useState<string[]>(["/photoo.jpg"]);
 
   // Typing logic
   useEffect(() => {
@@ -104,17 +143,18 @@ export default function App() {
       const timeout = setTimeout(() => {
         setCurrentLineIndex(currentLineIndex + 1);
         setCurrentCharIndex(0);
-      }, 500);
+      }, 50);
       return () => clearTimeout(timeout);
     }
   }, [hasStarted, currentLineIndex, currentCharIndex]);
+
 
   const handleStart = () => {
     setHasStarted(true);
   };
 
-  const handleCandleClick = () => {
-    if (sceneStarted && isCandleLit) {
+  const handleExtinguish = () => {
+    if (isCandleLit) {
       setIsCandleLit(false);
       setFireworksActive(true);
       setHasCompleted(true);
@@ -149,46 +189,76 @@ export default function App() {
         </div>
       )}
 
-      {sceneStarted && (
-        <div className="canvas-container">
-          <Canvas shadows camera={{ position: [0, 5, 12], fov: 45 }}>
-            <Suspense fallback={null}>
-              <Scene isPlaying={sceneStarted} isCandleLit={isCandleLit} photos={photos} />
-              <Fireworks isActive={fireworksActive} origin={[0, 2, 0]} />
+      <div
+        className="canvas-container"
+        style={{
+          opacity: 1,
+          visibility: sceneStarted ? 'visible' : 'hidden',
+          pointerEvents: sceneStarted ? 'auto' : 'none'
+        }}
+      >
+        <Canvas shadows camera={{ position: [0, 5, 12], fov: 45 }}>
+          <Suspense fallback={<Html center><div style={{ color: 'white', fontFamily: 'Inter', fontSize: '1.2rem' }}>Loading Surprise...</div></Html>}>
+            {sceneStarted && (
+              <>
+                <Scene
+                  isPlaying={sceneStarted}
+                  isCandleLit={isCandleLit}
+                  photos={photos}
+                  onOpenLetter={() => window.open('https://sendthesong.xyz/details/696fb274a371d3479e189821', '_blank')}
+                />
+                <Fireworks isActive={fireworksActive} origin={[0, 2, 0]} />
+              </>
+            )}
 
-              <ambientLight intensity={0.4} />
-              <pointLight position={[10, 10, 10]} intensity={2} castShadow shadow-mapSize={1024} />
-              <spotLight position={[-10, 15, 10]} angle={0.3} penumbra={1} intensity={2} castShadow />
-              <Environment preset="apartment" />
+            <ambientLight intensity={2.0} />
+            <pointLight position={[10, 10, 10]} intensity={3} castShadow />
+            <color attach="background" args={['#1a1010']} />
+            <OrbitControls enablePan={false} minDistance={5} maxDistance={25} />
+          </Suspense>
+        </Canvas>
 
-              <OrbitControls enablePan={false} minDistance={5} maxDistance={25} />
-            </Suspense>
-          </Canvas>
-
-          {!hasCompleted && (
-            <div className="ui-overlay">
-              {isCandleLit && (
-                <div className="hint" onClick={handleCandleClick}>
-                  Make a wish and click the candle!
-                </div>
-              )}
-              <div className="upload-section">
-                <label className="upload-button">
-                  Add Memories ✨
-                  <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} hidden />
-                </label>
+        {sceneStarted && !hasCompleted && (
+          <div className="ui-overlay">
+            {isCandleLit && (
+              <div className="hint" onClick={handleExtinguish}>
+                Make a wish and click to blow the candles! 🎂✨
               </div>
+            )}
+            <div className="upload-section">
+              <label className="upload-button">
+                Add Memories ✨
+                <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} hidden />
+              </label>
             </div>
-          )}
+          </div>
+        )}
 
-          {hasCompleted && (
-            <div className="final-message">
-              <h1>Happy Birthday!</h1>
-              <p>May all your dreams come true.</p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+
+        {hasCompleted && (
+          <div className="final-message">
+            <h1>Happy Birthday my sweetest angel baby! 🎂</h1>
+            <p className="wishes-text">semoga tahun ini makin sayang bram baby cepet tambah gyattt cepet lulus cepet dapet kerja cepet dapet momongan</p>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                marginTop: '20px',
+                padding: '10px 20px',
+                cursor: 'pointer',
+                borderRadius: '20px',
+                border: 'none',
+                background: '#ff85a1',
+                color: 'white',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                boxShadow: '0 4px 15px rgba(255, 133, 161, 0.4)'
+              }}
+            >
+              Restart Surprise ✨
+            </button>
+          </div>
+        )}
+      </div>
+    </div >
   );
 }

@@ -1,14 +1,19 @@
+import { useMemo } from "react";
 import type { ThreeElements } from "@react-three/fiber";
 import * as THREE from "three";
 
 type TableProps = ThreeElements["group"];
 
 export function Table({ children, ...groupProps }: TableProps) {
-    const woodMaterial = new THREE.MeshStandardMaterial({
-        color: "#4a3728",
-        roughness: 0.6,
-        metalness: 0.1,
-    });
+    const woodMaterial = useMemo(
+        () =>
+            new THREE.MeshStandardMaterial({
+                color: "#4a3728",
+                roughness: 0.6,
+                metalness: 0.1,
+            }),
+        []
+    );
 
     return (
         <group {...groupProps}>

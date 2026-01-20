@@ -219,6 +219,16 @@ body {
   animation: fadeInUp 1.5s cubic-bezier(0.23, 1, 0.32, 1) 0.5s forwards;
 }
 
+.wishes-text {
+  font-size: 1.4rem !important;
+  /* Slightly smaller for longer text */
+  max-width: 800px;
+  line-height: 1.4;
+  margin: 1rem auto;
+  text-transform: none !important;
+  /* Allow normal casing for the specific message */
+}
+
 @keyframes fadeInDown {
   from {
     opacity: 0;

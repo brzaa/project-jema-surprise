@@ -11,75 +11,76 @@ export function Cake({ children, ...groupProps }: CakeProps) {
     const frostingThickness = 0.1;
 
     // Materials
-    const cakeMaterial = useMemo(
+    const creamyMaterial = useMemo(
         () =>
             new THREE.MeshStandardMaterial({
-                color: "#f5e6d3", // Creampuff color
+                color: "#fdf5e6", // Mascarpone color
                 roughness: 0.8,
                 metalness: 0.1,
             }),
         []
     );
 
-    const frostingMaterial = useMemo(
+    const spongeMaterial = useMemo(
         () =>
             new THREE.MeshStandardMaterial({
-                color: "#ffc0cb", // Pink frosting
-                roughness: 0.3,
-                metalness: 0.1,
+                color: "#d2b48c", // Ladyfinger/Tan color
+                roughness: 0.9,
+                metalness: 0.0,
             }),
         []
     );
 
-    const toppingMaterial = useMemo(
+    const cocoaMaterial = useMemo(
         () =>
             new THREE.MeshStandardMaterial({
-                color: "#ff0000", // Strawberry red
-                roughness: 0.4,
-                metalness: 0.2,
+                color: "#3d2b1f", // Cocoa brown
+                roughness: 1.0,
+                metalness: 0.0,
             }),
         []
     );
 
-    // Procedural toppings (strawberries)
+    // Procedural cocoa powder (dusting)
     const toppings = useMemo(() => {
         const items = [];
-        const count = 8;
+        const count = 60; // More small "dust" particles
         for (let i = 0; i < count; i++) {
-            const angle = (i / count) * Math.PI * 2;
-            const x = Math.cos(angle) * (cakeRadius - 0.5);
-            const z = Math.sin(angle) * (cakeRadius - 0.5);
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.sqrt(Math.random()) * (cakeRadius - 0.2);
+            const x = Math.cos(angle) * dist;
+            const z = Math.sin(angle) * dist;
             items.push(
-                <mesh key={i} position={[x, cakeHeight + 0.1, z]} rotation={[0.2, angle, 0]}>
-                    <sphereGeometry args={[0.2, 16, 16]} />
-                    <primitive object={toppingMaterial} attach="material" />
+                <mesh key={i} position={[x, cakeHeight + 0.05, z]}>
+                    <sphereGeometry args={[0.08, 8, 8]} />
+                    <primitive object={cocoaMaterial} attach="material" />
                 </mesh>
             );
         }
         return items;
-    }, [cakeRadius, cakeHeight, toppingMaterial]);
+    }, [cakeRadius, cakeHeight, cocoaMaterial]);
 
     return (
         <group {...groupProps}>
-            {/* Cake Body */}
+            {/* Cake Body - Layered appearance */}
             <mesh position={[0, cakeHeight / 2, 0]}>
                 <cylinderGeometry args={[cakeRadius, cakeRadius, cakeHeight, 64]} />
-                <primitive object={cakeMaterial} attach="material" />
+                <primitive object={creamyMaterial} attach="material" />
             </mesh>
 
-            {/* Frosting Top */}
+            {/* Inner Sponge Layer (visual trick with a smaller ring/cylinder or stripes) */}
+            <mesh position={[0, cakeHeight / 2, 0]}>
+                <cylinderGeometry args={[cakeRadius + 0.01, cakeRadius + 0.01, cakeHeight * 0.4, 64]} />
+                <primitive object={spongeMaterial} attach="material" />
+            </mesh>
+
+            {/* Frosting Top (Dusting base) */}
             <mesh position={[0, cakeHeight + frostingThickness / 2, 0]}>
                 <cylinderGeometry args={[cakeRadius + 0.05, cakeRadius + 0.05, frostingThickness, 64]} />
-                <primitive object={frostingMaterial} attach="material" />
+                <primitive object={creamyMaterial} attach="material" />
             </mesh>
 
-            {/* Frosting Drips (Simplified as a ring for now) */}
-            <mesh position={[0, cakeHeight - 0.1, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                <torusGeometry args={[cakeRadius + 0.02, 0.15, 16, 64]} />
-                <primitive object={frostingMaterial} attach="material" />
-            </mesh>
-
-            {/* Toppings */}
+            {/* Toppings (Cocoa Powder) */}
             {toppings}
 
             {children}

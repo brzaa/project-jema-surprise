@@ -138,7 +138,7 @@ export function Candle({ isLit = true, ...groupProps }: CandleProps) {
             Math.sin(elapsed * 8.7) * 0.03;
 
         const strength = flameUniforms.strength.value;
-        light.intensity = Math.max(0, (lightStrengthRef.current * 2.0) + flicker * strength);
+        light.intensity = Math.max(0, (lightStrengthRef.current * 5.0) + flicker * strength);
 
         light.position.y = 1.2 + Math.sin(elapsed * 5.0) * 0.05;
 
@@ -163,12 +163,12 @@ export function Candle({ isLit = true, ...groupProps }: CandleProps) {
             </mesh>
 
             {/* Flame */}
-            <mesh ref={flameMeshRef} scale={0.4} position={[0, 1.3, 0]} material={flameMaterial}>
+            <mesh ref={flameMeshRef} scale={0.8} position={[0, 1.45, 0]} material={flameMaterial}>
                 <sphereGeometry args={[0.5, 32, 32]} />
             </mesh>
 
             {/* Light */}
-            <pointLight ref={lightRef} position={[0, 1.2, 0]} distance={10} color="#ffaa44" decay={2} />
+            <pointLight ref={lightRef} position={[0, 1.4, 0]} distance={15} color="#ffaa44" decay={2} />
         </group>
     );
 }
